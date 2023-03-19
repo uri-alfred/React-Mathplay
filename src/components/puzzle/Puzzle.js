@@ -6,7 +6,6 @@ import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import MenuPrincipal from '../commons/MenuPrincipal';
 import { Grid } from '@mui/material';
-import Button from '@mui/material/Button';
 
 class Puzzle extends Component {
   constructor(props) {
@@ -31,7 +30,7 @@ class Puzzle extends Component {
         tileSet: this.state.original.tileSet, // asigna el orden de inicio
       },
     });
-  }; 
+  };
 
   /**
    * Metodo para iniciar un nuevo juego
@@ -54,14 +53,12 @@ class Puzzle extends Component {
       <div className={className}>
         <MenuPrincipal />
         <br />
+        <br />
         <Grid container spacing={2}>
-          <Grid xs={10}>
-          <div className='titulos'>
-          <h1>15 Puzzle</h1>
-        </div>
-          </Grid>
-          <Grid xs={2}>
-            <Button className='botones_azul' type='button' href='/'>Regresar el inicio</Button>
+          <Grid xs={12}>
+            <div className='titulos'>
+              <h1>15 Puzzle</h1>
+            </div>
           </Grid>
         </Grid>
         <Game

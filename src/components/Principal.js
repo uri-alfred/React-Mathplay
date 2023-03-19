@@ -1,4 +1,4 @@
-﻿import React from 'react';
+﻿import {React} from 'react';
 import { useNavigate } from 'react-router-dom/dist';
 import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
@@ -9,13 +9,13 @@ import MenuPrincipal from './commons/MenuPrincipal';
 
 const images = [
   {
-    url: '/Imagenes/15puzzle.png',
+    url: '/Imagenes/15Puzzle-animated.gif',
     title: '15 Puzzle',
     width: '34%',
     path: '/puzzle',
   },
   {
-    url: '/Imagenes/sudoku.png',
+    url: '/Imagenes/Sudoku-animated.gif',
     title: 'Sudoku',
     width: '33%',
     path: '/sudoku',

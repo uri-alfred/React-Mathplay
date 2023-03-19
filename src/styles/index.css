@@ -12,10 +12,15 @@ code {
     monospace;
 } */
 
+:root {
+  --azul-oscuro: #4c4cf9;
+  --azul-oscuro-plus: #002146;
+}
+
 * {
   box-sizing: border-box;
   /* iOS Safari specific */
-  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  -webkit-tap-highlight-color: black;
   -webkit-touch-callout: none;
   -webkit-text-size-adjust: none;
 }
@@ -27,22 +32,24 @@ body {
   background: #73cce8;
 }
 
+
 .titulos {
   color: black;
   text-align: center;
 }
 
 .botones_azul {
-  background-color: hsla(240, 99%, 41%, 0.627) !important;
+  background-color: var(--azul-oscuro) !important;
   color: white !important;
   margin-left: 2px !important;
   margin-right: 2px !important;
 }
 
 .sopa_cell {
-  border: 1px solid hsla(240, 99%, 41%, 0.627);
+  border: 1px solid var(--azul-oscuro);
   padding: 12px 16px;
   color: black;
   cursor: pointer;
 }
+
 

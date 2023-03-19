@@ -116,13 +116,10 @@ function Sopa() {
       <br />
       <br />
       <Grid container spacing={2}>
-        <Grid xs={10}>
+        <Grid xs={12}>
           <div className='titulos'>
             <h1>Sopa de números</h1>
           </div> <br /><br />
-        </Grid>
-        <Grid xs={2}>
-          <Button className='botones_azul' type='button' href='/'>Regresar el inicio</Button>
         </Grid>
         <Grid Item xs={1}></Grid>
         <Grid Item xs={4}>

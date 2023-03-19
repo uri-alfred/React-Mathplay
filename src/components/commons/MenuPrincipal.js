@@ -11,6 +11,7 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
+import { useAuth } from '../../context/authContext';
 
 const pages = ['Inicio'];
 const settings = ['Perfil', 'Cerrar sesión'];
@@ -32,6 +33,16 @@ function MenuPrincipal() {
 
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
+  };
+
+  const { logout, user } = useAuth();
+  
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } catch (error) {
+      console.error(error.message);
+    }
   };
 
   return (
@@ -146,7 +157,7 @@ function MenuPrincipal() {
               onClose={handleCloseUserMenu}
             >
               {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
+                <MenuItem key={setting} onClick={ setting === 'Cerrar sesión' ? handleLogout : handleCloseUserMenu}>
                   <Typography textAlign="center">{setting}</Typography>
                 </MenuItem>
               ))}
