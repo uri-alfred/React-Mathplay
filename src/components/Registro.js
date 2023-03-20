@@ -25,9 +25,11 @@ export default function Registro() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
+    // se concatena nombres y apellidos
+    const name = data.get('nombres').trim().concat(" ").concat(data.get('apellidos')).trim();
     setError('');
     try {
-      await signup(data.get('email'), data.get('password'));
+      await signup(data.get('email'), data.get('password'), name, './Imagenes/Perfil-simple.png');
       navigate("/login");
     } catch (error) {
       // console.log(error.code);

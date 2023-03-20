@@ -24,13 +24,11 @@ export default function Login() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log(data.get('email'));
     setError('');
     try {
       await login(data.get('email'), data.get('password'));
       navigate("/");
     } catch (error) {
-      // console.log(error.code);
 
       switch (error.code) {
         case "auth/user-not-found":
@@ -41,7 +39,7 @@ export default function Login() {
           break;
 
         default:
-          setError("Error desconocido, intentalo nuevamente más tarde.");
+          setError(error.message);
           break;
       }
 

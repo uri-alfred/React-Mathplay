@@ -52,4 +52,6 @@ body {
   cursor: pointer;
 }
 
-
+.loading {
+  margin-top: 10%;
+}
