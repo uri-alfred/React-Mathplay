@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 import Principal from './components/Principal';
 import Puzzle from './components/puzzle/Puzzle';

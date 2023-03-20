@@ -1,7 +1,6 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import MenuPrincipal from '../commons/MenuPrincipal';
 import Grid from '@mui/material/Grid';
-import Button from '@mui/material/Button';
 
 const rows = 10;
 const cols = 10;
