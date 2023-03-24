@@ -120,8 +120,8 @@ function Sopa() {
             <h1>Sopa de números</h1>
           </div> <br /><br />
         </Grid>
-        <Grid Item xs={1}></Grid>
-        <Grid Item xs={4}>
+        <Grid xs={1}></Grid>
+        <Grid xs={4}>
           <div>
             <table>
               <tbody>

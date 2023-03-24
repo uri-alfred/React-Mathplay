@@ -13,10 +13,17 @@ import styled from 'styled-components';
 import Dialog from '@mui/material/Dialog';
 import Button from '@mui/material/Button';
 import Snackbar from '@mui/material/Snackbar';
+import { db } from '../../firebase';
+import { ref, push, set } from 'firebase/database';
+import { DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
+import { authContext } from '../../context/authContext';
+
 
 class Game extends Component {
-  constructor(props) {
-    super(props);
+  static contextType = authContext;
+  
+  constructor(props, context) {
+    super(props, context);
 
     const { numbers, tileSize, gridSize, moves, seconds } = props;
     const tiles = this.generateTiles(numbers, gridSize, tileSize);
@@ -59,6 +66,8 @@ class Game extends Component {
         tile.number = index + 1;
         return Object.assign({}, tile);
       });
+
+      this.saveScore();
 
       clearInterval(this.timerId);
 
@@ -125,10 +134,29 @@ class Game extends Component {
     // valida si coincide el arreglo ordenado con el tamaño del grid
     if (correctedTiles.length === (this.props.gridSize) ** 2) {
       clearInterval(this.timerId);
+      this.saveScore();
       return true;
     } else {
       return false;
     }
+  }
+
+  saveScore = () => {
+
+    if( this.state.seconds > 0 && this.state.moves > 0) {
+      const rankingRef = ref(db, "Ranking-15puzzle");
+      const newScoreRef = push(rankingRef);
+  
+      const newScore = {
+        username: this.context.user.displayName,
+        time: this.state.seconds,
+        moves: this.state.moves
+      };
+  
+      set(newScoreRef, newScore);
+
+    }
+    
   }
 
   /**
@@ -230,8 +258,6 @@ class Game extends Component {
       onNewClick,
     } = this.props;
 
-    const actions = [<Button onClick={this.handleDialogClose}>Cerrar </Button>];
-
     return (
       <div className={className}>
         <MenuPuzzle
@@ -249,18 +275,23 @@ class Game extends Component {
           onTileClick={this.onTileClick}
         />
         <Dialog
-          title="Felicidades!"
-          actions={actions}
-          modal={false}
-          open={this.state.dialogOpen}
-          onRequestClose={this.handleDialogClose}
-        >
-          Resolviste el puzzle en{' '}
-          {this.state.moves}
-          {' '}movimientos en{' '}
-          {this.state.seconds}
-          {' '}s!
-        </Dialog>
+        open={this.state.dialogOpen}
+        onClose={this.handleDialogClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"Felicidades!"}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+          Resolviste el puzzle en{' '} {this.state.moves} {' '}movimientos en{' '} {this.state.seconds}{' '}s!
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={this.handleDialogClose}>Cerrar</Button>
+        </DialogActions>
+      </Dialog>
         <Snackbar
           open={this.state.snackbarOpen}
           message={this.state.snackbarText}

@@ -23,11 +23,6 @@ export const Header = props => {
           </Button>
         </Grid>
       </Grid>
-      <header className="header">
-        <h1>
-
-        </h1>
-      </header>
 
     </div>
   );

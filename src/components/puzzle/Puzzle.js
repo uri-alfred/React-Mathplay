@@ -61,6 +61,7 @@ class Puzzle extends Component {
             </div>
           </Grid>
         </Grid>
+        <br />
         <Game
           gridSize={4}
           tileSize={90}

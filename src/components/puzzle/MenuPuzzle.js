@@ -30,8 +30,8 @@ class Menu extends Component {
         <br />
         <Grid container spacing={5}>
           
-          <Grid item xs={3}> </Grid>
-          <Grid item xs={6}>
+          <Grid xs={3}> </Grid>
+          <Grid xs={6}>
         <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
           <Button
             className='botones_azul'
@@ -88,7 +88,7 @@ class Menu extends Component {
         </Box>
             
           </Grid>
-          <Grid item xs={3}> </Grid>
+          <Grid xs={3}> </Grid>
         </Grid>
 
 

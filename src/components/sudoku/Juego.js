@@ -6,6 +6,8 @@ import { StatusSection } from './layout/StatusSection';
 import { getUniqueSudoku } from './solver/UniqueSudoku';
 import { useSudokuContext } from './context/SudokuContext.js';
 import MenuPrincipal from '../commons/MenuPrincipal';
+import Clasificaciones from '../puzzle/Clasificaciones';
+import { Grid } from '@mui/material';
 
 function Juego(Props) {
   let {
@@ -216,21 +218,28 @@ function Juego(Props) {
   return (
     <div>
       <MenuPrincipal />
-        <Header onClick={onClickNewGame} />
-      <div className={overlay ? 'container blur' : 'container'}>
-        <div className="innercontainer">
-          <GameSection onClick={indexOfArray => onClickCell(indexOfArray)} />
-          <StatusSection
-            onClickNumber={number => onClickNumber(number)}
-            onChange={e => onChangeDifficulty(e)}
-            onClickUndo={onClickUndo}
-            onClickErase={onClickErase}
-            onClickHint={onClickHint}
-            onClickMistakesMode={onClickMistakesMode}
-            onClickFastMode={onClickFastMode}
-          />
-        </div>
-      </div>
+      <Header onClick={onClickNewGame} />
+      <Grid container spacing={2}>
+        <Grid xs={8}>
+          <div className={overlay ? 'container blur' : 'container'}>
+            <div className="innercontainer">
+              <GameSection onClick={indexOfArray => onClickCell(indexOfArray)} />
+              <StatusSection
+                onClickNumber={number => onClickNumber(number)}
+                onChange={e => onChangeDifficulty(e)}
+                onClickUndo={onClickUndo}
+                onClickErase={onClickErase}
+                onClickHint={onClickHint}
+                onClickMistakesMode={onClickMistakesMode}
+                onClickFastMode={onClickFastMode}
+              />
+            </div>
+          </div>
+        </Grid>
+        <Grid xs={4}>
+          <Clasificaciones rankingName="Ranking-sudoku" />
+        </Grid>
+      </Grid>
       <div
         className={overlay ? 'overlay overlay--visible' : 'overlay'}
         onClick={onClickOverlay}
