@@ -12,9 +12,13 @@ import Replay from '@mui/icons-material/Replay';
 import Pause from '@mui/icons-material/Pause';
 import Play from '@mui/icons-material/PlayArrow';
 import New from '@mui/icons-material/PowerSettingsNew';
+import { formatTime } from '../../libs/formatos';
 
 
 class Menu extends Component {
+
+  
+
   render() {
     const {
       seconds,
@@ -66,10 +70,11 @@ class Menu extends Component {
 
           <Chip
             sx={{ my: 2, color: 'black', display: 'block' }}
+            style={{ fontSize: 16}}
             label={
               (
                 <MediaQuery query="(min-width: 772px)" component="span">
-                  <Alarm /> Tiempo: {seconds}s
+                  <Alarm /> {formatTime(seconds)}
                 </MediaQuery>
               )
             }
@@ -77,6 +82,7 @@ class Menu extends Component {
 
           <Chip
             sx={{ my: 2, color: 'black', display: 'block',  }}
+            style={{ fontSize: 16}}
             label={
               (
                 <MediaQuery query="(min-width: 772px)" component="span">

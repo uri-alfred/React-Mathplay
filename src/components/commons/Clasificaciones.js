@@ -2,6 +2,7 @@ import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow
 import { onValue, ref } from 'firebase/database';
 import React, { useEffect, useState } from 'react';
 import { db } from '../../firebase';
+import { formatTime } from '../../libs/formatos';
 
 
 function Clasificaciones(props) {
@@ -60,7 +61,7 @@ function Clasificaciones(props) {
             <TableCell>Top</TableCell>
             <TableCell>Jugador</TableCell>
             {rankingName === 'Ranking-15puzzle' ?
-            <TableCell align="right">Mov</TableCell>
+            <TableCell align="right">Mov.</TableCell>
             : '' }
             
             <TableCell align="right">Tiempo</TableCell>
@@ -78,7 +79,7 @@ function Clasificaciones(props) {
             <TableCell align="right">{ranking.moves}</TableCell>
             : '' }
               
-              <TableCell align="right">{ranking.time}</TableCell>
+              <TableCell align="right">{formatTime(ranking.time)}</TableCell>
             </TableRow>
           ))}
         </TableBody>

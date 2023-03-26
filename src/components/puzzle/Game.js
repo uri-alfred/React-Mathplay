@@ -17,6 +17,7 @@ import { db } from '../../firebase';
 import { ref, push, set } from 'firebase/database';
 import { DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import { authContext } from '../../context/authContext';
+import { formatTime } from '../../libs/formatos';
 
 
 class Game extends Component {
@@ -168,6 +169,10 @@ class Game extends Component {
     });
   }
 
+  componentWillUnmount() {
+    clearInterval(this.timerId);
+  }
+
   setTimer() {
     this.timerId = setInterval(
       () => {
@@ -285,7 +290,7 @@ class Game extends Component {
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-          Resolviste el puzzle en{' '} {this.state.moves} {' '}movimientos en{' '} {this.state.seconds}{' '}s!
+          Resolviste el puzzle en{' '} {this.state.moves} {' '}movimientos en{' '} {formatTime(this.state.seconds)}!
           </DialogContentText>
         </DialogContent>
         <DialogActions>
