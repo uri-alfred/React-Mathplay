@@ -29,7 +29,7 @@ export default function Registro() {
     const name = data.get('nombres').trim().concat(" ").concat(data.get('apellidos')).trim();
     setError('');
     try {
-      await signup(data.get('email'), data.get('password'), name, './Imagenes/Perfil-simple.png');
+      await signup(data.get('email'), data.get('password'), name, null);
       navigate("/login");
     } catch (error) {
       // console.log(error.code);

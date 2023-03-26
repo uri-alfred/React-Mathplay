@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import Tile, { propTypes as TilePropTypes } from './Tile';
 import Grid from '@mui/material/Grid';
-import Clasificaciones from './Clasificaciones';
+import Clasificaciones from '../commons/Clasificaciones';
 
 
 class Tablero extends Component {
@@ -19,7 +19,7 @@ class Tablero extends Component {
       <div>
         <Grid container spacing={2}>
 
-          <Grid xs={8}>
+          <Grid xs={8} alignItems="center">
             <div className={className}>
               <div className="tiles">
                 {tiles.map((tile, tileId) => {
@@ -36,7 +36,7 @@ class Tablero extends Component {
               </div>
             </div>
           </Grid>
-          <Grid xs={4}>
+          <Grid xs={4} alignItems="center" alignContent={'center'}>
             <Clasificaciones rankingName="Ranking-15puzzle" />
           </Grid>
         </Grid>

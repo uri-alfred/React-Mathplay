@@ -34,7 +34,7 @@ class Menu extends Component {
           <Grid xs={6}>
         <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
           <Button
-            className='botones_azul'
+            className='botones_azul item_with_icon'
             sx={{ my: 2, color: 'white', display: 'block' }}
             onClick={onNewClick}
             title="Iniciar nuevo juego"
@@ -42,7 +42,7 @@ class Menu extends Component {
             <New className="menuIcon" /> Nuevo juego
           </Button>
           <Button
-            className='botones_azul'
+            className='botones_azul item_with_icon'
             sx={{ my: 2, color: 'white', display: 'block' }}
             onClick={onPauseClick}
             title="Pausa/Continuar con el juego."
@@ -56,7 +56,7 @@ class Menu extends Component {
             {' '}
           </Button>
           <Button
-            className='botones_azul'
+            className='botones_azul item_with_icon'
             sx={{ my: 2, color: 'white', display: 'block' }}
             onClick={onResetClick}
             title="Reiniciar juego"

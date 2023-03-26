@@ -11,21 +11,21 @@ const images = [
   {
     url: '/Imagenes/15Puzzle-animated.gif',
     title: '15 Puzzle',
-    width: '34%',
+    width: '50%',
     path: '/puzzle',
   },
   {
     url: '/Imagenes/Sudoku-animated.gif',
     title: 'Sudoku',
-    width: '33%',
+    width: '50%',
     path: '/sudoku',
   },
-  {
-    url: '/Imagenes/Sopa-de-numeros.png',
-    title: 'Sopa de números',
-    width: '33%',
-    path: '/sopanumeros',
-  },
+  // {
+  //   url: '/Imagenes/Sopa-de-numeros.png',
+  //   title: 'Sopa de números',
+  //   width: '33%',
+  //   path: '/sopanumeros',
+  // },
 ];
 
 const ImageButton = styled(ButtonBase)(({ theme }) => ({

@@ -230,8 +230,8 @@ body {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   position: relative;
-  top: 93px;
   left: 10px;
+  background-color: var(--color-blue);
 }
 
 .status__number {

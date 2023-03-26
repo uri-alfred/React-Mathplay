@@ -12,13 +12,13 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import { useAuth } from '../../context/authContext';
-import { useNavigate } from 'react-router-dom/dist';
 
 const pages = ['Inicio'];
-const settings = ['Perfil', 'Cerrar sesión'];
+const settings = [
+  // 'Perfil', 
+'Cerrar sesión'];
 
 function MenuPrincipal() {
-  const navigate = useNavigate();
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
 
@@ -139,7 +139,7 @@ function MenuPrincipal() {
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Abrir ajustes">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar />
+                <Avatar src={user.photoURL} />
               </IconButton>
             </Tooltip>
             <Menu

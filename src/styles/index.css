@@ -43,6 +43,8 @@ body {
   color: white !important;
   margin-left: 2px !important;
   margin-right: 2px !important;
+  height: 35px;
+  margin-top: 16px !important;
 }
 
 .sopa_cell {
@@ -54,4 +56,8 @@ body {
 
 .loading {
   margin-top: 10%;
+}
+
+.item_with_icon {
+  display: flex !important;
 }

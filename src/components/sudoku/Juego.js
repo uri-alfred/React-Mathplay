@@ -6,8 +6,11 @@ import { StatusSection } from './layout/StatusSection';
 import { getUniqueSudoku } from './solver/UniqueSudoku';
 import { useSudokuContext } from './context/SudokuContext.js';
 import MenuPrincipal from '../commons/MenuPrincipal';
-import Clasificaciones from '../puzzle/Clasificaciones';
 import { Grid } from '@mui/material';
+import Clasificaciones from '../commons/Clasificaciones';
+import { useAuth } from '../../context/authContext';
+import { db } from '../../firebase';
+import { push, ref, set } from 'firebase/database';
 
 function Juego(Props) {
   let {
@@ -17,7 +20,6 @@ function Juego(Props) {
     setGameArray,
     difficulty,
     setDifficulty,
-    setTimeGameStarted,
     fastMode,
     setFastMode,
     cellSelected,
@@ -30,6 +32,9 @@ function Juego(Props) {
   let [history, setHistory] = useState([]);
   let [solvedArray, setSolvedArray] = useState([]);
   let [overlay, setOverlay] = useState(false);
+  const { user } = useAuth();
+  const [timeSec, setTimeSec] = useState(0);
+  const [isRunning, setIsRunning] = useState(true);
 
   /**
    * Creates a new game and initializes the state variables.
@@ -44,10 +49,10 @@ function Juego(Props) {
     setGameArray(temporaryInitArray);
     setSolvedArray(temporarySolvedArray);
     setNumberSelected('0');
-    setTimeGameStarted(moment());
     setCellSelected(-1);
     setHistory([]);
     setWon(false);
+    setTimeSec(0);
   }
 
   /**
@@ -85,8 +90,29 @@ function Juego(Props) {
       if (_isSolved(index, value)) {
         setOverlay(true);
         setWon(true);
+        handleStop();
+        saveScore();
       }
     }
+  }
+
+  function saveScore() {
+
+    console.log(timeSec);
+
+    if( timeSec > 0 ) {
+      const rankingRef = ref(db, "Ranking-sudoku");
+      const newScoreRef = push(rankingRef);
+  
+      const newScore = {
+        username: user.displayName,
+        time: timeSec
+      };
+  
+      set(newScoreRef, newScore);
+
+    }
+    
   }
 
   /**
@@ -204,16 +230,24 @@ function Juego(Props) {
     _createNewGame();
   }
 
-  /**
-   * On load, create a New Game.
-   */
-  useEffect(
-    () => {
-      _createNewGame();
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    },
-    [],
-  );
+  
+  useEffect(() => {
+    let interval = null;
+    _createNewGame();
+
+    if (isRunning) {
+      interval = setInterval(() => {
+        setTimeSec((prevTimeSec) => prevTimeSec + 1);
+      }, 1000);
+    }
+
+    return () => clearInterval(interval);
+  }, []);
+
+  function handleStop() {
+    setIsRunning(false);
+  };
+
 
   return (
     <div>
@@ -232,6 +266,7 @@ function Juego(Props) {
                 onClickHint={onClickHint}
                 onClickMistakesMode={onClickMistakesMode}
                 onClickFastMode={onClickFastMode}
+                timeSec={timeSec}
               />
             </div>
           </div>
