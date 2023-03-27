@@ -10,3 +10,8 @@
       .padStart(2, "0");
     return `${hours}:${minutes}:${seconds}`;
   };
+
+export const validarFormatEmail = (email) => {
+  const regex = /([\w\.\-_]+)?\w+@[\w-_]+(\.\w+){1,}/igm;
+  return regex.test(email);
+}

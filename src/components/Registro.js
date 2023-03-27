@@ -13,6 +13,7 @@ import AlertTitle from '@mui/material/AlertTitle';
 import Stack from '@mui/material/Stack';
 import { useAuth } from "../context/authContext";
 import { useNavigate } from 'react-router-dom/dist';
+import { validaInputEmail, validaInputPass, validaInputUsername } from '../libs/Validaciones';
 
 const theme = createTheme();
 
@@ -21,16 +22,58 @@ export default function Registro() {
   const { signup } = useAuth();
   const navigate = useNavigate();
   const [error, setError] = useState();
+  const [email, setEmail] = useState('');
+  const [errorEmail, setErrorEmail] = useState({
+    error: false,
+    message: ''
+  });
+  const [pass, setPass] = useState('');
+  const [errorPass, setErrorPass] = useState({
+    error: false,
+    message: ''
+  });
+  const [username, setUsername] = useState('');
+  const [errorUsername, setErrorUsername] = useState({
+    error: false,
+    message: ''
+  });
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    // se concatena nombres y apellidos
-    const name = data.get('nombres').trim().concat(" ").concat(data.get('apellidos')).trim();
+    
     setError('');
+    setErrorUsername({ error: false, message: '' });
+    setErrorEmail({ error: false, message: '' });
+    setErrorPass({ error: false, message: '' });
+
     try {
-      await signup(data.get('email'), data.get('password'), name, null);
-      navigate("/login");
+      const usernameError = validaInputUsername(username);
+      if(usernameError.error) {
+        setErrorUsername({
+          error: usernameError.error,
+          message: usernameError.message
+        });
+      }
+      const emailError = validaInputEmail(email);
+      if(emailError.error) {
+        setErrorEmail({
+          error: emailError.error,
+          message: emailError.message
+        });
+      }
+      const passError = validaInputPass(pass);
+      if(passError.error) {
+        setErrorPass({
+          error: passError.error,
+          message: passError.message
+        });
+      }
+
+      if(!usernameError.error && !emailError.error && !passError.error) {
+        // en caso de que todos los valores sean correctos
+        await signup( email, pass, username, null);
+        navigate("/login");
+      }
     } catch (error) {
       // console.log(error.code);
 
@@ -44,17 +87,18 @@ export default function Registro() {
         case "auth/email-already-in-use":
           setError("Ya existe una cuenta registrada con ese correo.");
           break;
+        case "auth/internal-error":
+          setError("Revisa bien los datos ingresados.");
+          break;
 
         default:
-          setError("Error desconocido, intentalo nuevamente más tarde.");
+          setError(error.message);
           break;
       }
 
     }
 
   };
-
-
 
   return (
     <ThemeProvider theme={theme}>
@@ -83,25 +127,18 @@ export default function Registro() {
           </Typography>
           <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
             <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12}>
                 <TextField
-                  autoComplete="given-name"
-                  name="nombres"
+                  name="nombre"
                   required
                   fullWidth
-                  id="nombres"
-                  label="Nombre(s)"
+                  id="nombre"
+                  label="Nombre"
                   autoFocus
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  required
-                  fullWidth
-                  id="apellidos"
-                  label="Apellido(s)"
-                  name="apellidos"
-                  autoComplete="family-name"
+                  onChange={(e) => setUsername(e.target.value.trim())}
+                  value={username}
+                  error={errorUsername.error}
+                  helperText={errorUsername.message}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -109,9 +146,12 @@ export default function Registro() {
                   required
                   fullWidth
                   id="email"
-                  label="Correo"
+                  label="Correo electrónico"
                   name="email"
-                  autoComplete="email"
+                  onChange={(e) => setEmail(e.target.value.trim())}
+                  value={email}
+                  error={errorEmail.error}
+                  helperText={errorEmail.message}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -122,7 +162,10 @@ export default function Registro() {
                   label="Contraseña"
                   type="password"
                   id="password"
-                  autoComplete="new-password"
+                  onChange={(e) => setPass(e.target.value.trim())}
+                  value={pass}
+                  error={errorPass.error}
+                  helperText={errorPass.message}
                 />
               </Grid>
             </Grid>
@@ -135,7 +178,7 @@ export default function Registro() {
               Registrarse
             </Button>
             <Grid container justifyContent="flex-end">
-              <Grid item>
+              <Grid>
                 <Link href="/login" variant="body2">
                   ¿Ya tienes una cuenta? Inicia sesión
                 </Link>

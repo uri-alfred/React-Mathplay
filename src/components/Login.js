@@ -13,21 +13,50 @@ import { useAuth } from "../context/authContext";
 import { useNavigate } from 'react-router-dom/dist';
 import Divider from '@mui/material/Divider';
 import GoogleIcon from '@mui/icons-material/Google';
+import { validaInputEmail, validaInputPass } from '../libs/Validaciones';
 
 export default function Login() {
 
   const { login, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
   const [error, setError] = useState();
-
+  const [email, setEmail] = useState('');
+  const [errorEmail, setErrorEmail] = useState({
+    error: false,
+    message: ''
+  });
+  const [pass, setPass] = useState('');
+  const [errorPass, setErrorPass] = useState({
+    error: false,
+    message: ''
+  });
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
+
     setError('');
+    setErrorEmail({ error: false, message: '' });
+    setErrorPass({ error: false, message: '' });
+
     try {
-      await login(data.get('email'), data.get('password'));
-      navigate("/");
+      const emailError = validaInputEmail(email);
+      if (emailError.error) {
+        setErrorEmail({
+          error: emailError.error,
+          message: emailError.message
+        });
+      }
+      const passError = validaInputPass(pass);
+      if (passError.error) {
+        setErrorPass({
+          error: passError.error,
+          message: passError.message
+        });
+      }
+      if (!emailError.error && !passError.error) {
+        await login(email, pass);
+        navigate("/");
+      }
     } catch (error) {
 
       switch (error.code) {
@@ -62,7 +91,7 @@ export default function Login() {
         case "auth/popup-closed-by-user":
           setError("Se cerro la ventana de Google, necesita seleccionar o iniciar sesión en una cuenta valida de Google para poder continuar.");
           break;
-      
+
         default:
           setError("Error desconocido al intentar iniciar con una cuenta de Google, espere un momento y vuelva a intentar.")
           break;
@@ -113,10 +142,13 @@ export default function Login() {
               required
               fullWidth
               id="email"
-              label="Correo electronico"
+              label="Correo electrónico"
               name="email"
-              autoComplete="email"
               autoFocus
+              onChange={(e) => setEmail(e.target.value.trim())}
+              value={email}
+              error={errorEmail.error}
+              helperText={errorEmail.message}
             />
             <TextField
               margin="normal"
@@ -126,7 +158,10 @@ export default function Login() {
               label="Contraseña"
               type="password"
               id="password"
-              autoComplete="current-password"
+              onChange={(e) => setPass(e.target.value.trim())}
+              value={pass}
+              error={errorPass.error}
+              helperText={errorPass.message}
             />
             <Button
               type='submit'
@@ -152,11 +187,11 @@ export default function Login() {
             <br />
             <Divider className='titulos' variant="middle" > Ó </Divider>
             <br />
-            <Button 
-            variant="outlined" 
-            fullWidth 
-            startIcon={<GoogleIcon />} 
-            onClick={handleGoogleSignin}
+            <Button
+              variant="outlined"
+              fullWidth
+              startIcon={<GoogleIcon />}
+              onClick={handleGoogleSignin}
             > Iniciar con cuenta de Google</Button>
           </Box>
         </Box>
