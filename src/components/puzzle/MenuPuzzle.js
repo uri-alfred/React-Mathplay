@@ -27,6 +27,7 @@ class Menu extends Component {
       onPauseClick,
       onNewClick,
       gameState,
+      onSolvedGame,
     } = this.props;
 
     return (
@@ -34,8 +35,8 @@ class Menu extends Component {
         <br />
         <Grid container spacing={5}>
           
-          <Grid xs={3}> </Grid>
-          <Grid xs={6}>
+          <Grid xs={2}> </Grid>
+          <Grid xs={7}>
         <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
           <Button
             className='botones_azul item_with_icon'
@@ -66,6 +67,9 @@ class Menu extends Component {
             title="Reiniciar juego"
           >
             <Replay className="menuIcon" /> Reiniciar juego
+          </Button>
+          <Button variant="outlined" color="error" className='btn-solved-games' onClick={onSolvedGame}>
+            Resolver puzzle
           </Button>
 
           <Chip

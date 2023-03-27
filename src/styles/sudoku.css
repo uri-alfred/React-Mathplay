@@ -240,6 +240,7 @@ body {
   font-size: 26px;
   padding: 12px 0;
   cursor: pointer;
+  color: black;
 }
 
 .status__number.status__number--selected {

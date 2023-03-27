@@ -6,20 +6,19 @@ import { StatusSection } from './layout/StatusSection';
 import { getUniqueSudoku } from './solver/UniqueSudoku';
 import { useSudokuContext } from './context/SudokuContext.js';
 import MenuPrincipal from '../commons/MenuPrincipal';
-import { Grid } from '@mui/material';
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Grid } from '@mui/material';
 import Clasificaciones from '../commons/Clasificaciones';
 import { useAuth } from '../../context/authContext';
 import { db } from '../../firebase';
 import { push, ref, set } from 'firebase/database';
+import { formatTime } from '../../libs/formatos';
 
-function Juego(Props) {
+function Juego() {
   let {
     numberSelected,
     setNumberSelected,
     gameArray,
     setGameArray,
-    difficulty,
-    setDifficulty,
     fastMode,
     setFastMode,
     cellSelected,
@@ -28,13 +27,15 @@ function Juego(Props) {
     setInitArray,
     setWon,
   } = useSudokuContext();
+  let [difficulty, setDifficulty] = useState('Easy');
   let [mistakesMode, setMistakesMode] = useState(false);
   let [history, setHistory] = useState([]);
   let [solvedArray, setSolvedArray] = useState([]);
   let [overlay, setOverlay] = useState(false);
   const { user } = useAuth();
   const [timeSec, setTimeSec] = useState(0);
-  const [isRunning, setIsRunning] = useState(true);
+  const [time, setTime] = useState(0);
+  let interval = null;
 
   /**
    * Creates a new game and initializes the state variables.
@@ -53,6 +54,7 @@ function Juego(Props) {
     setHistory([]);
     setWon(false);
     setTimeSec(0);
+    setTime(0);
   }
 
   /**
@@ -90,29 +92,23 @@ function Juego(Props) {
       if (_isSolved(index, value)) {
         setOverlay(true);
         setWon(true);
-        handleStop();
         saveScore();
       }
     }
   }
 
   function saveScore() {
-
-    console.log(timeSec);
-
     if( timeSec > 0 ) {
       const rankingRef = ref(db, "Ranking-sudoku");
       const newScoreRef = push(rankingRef);
-  
+      const timeNow = timeSec;
+      setTime(timeNow);
       const newScore = {
         username: user.displayName,
-        time: timeSec
+        time: timeNow
       };
-  
       set(newScoreRef, newScore);
-
     }
-    
   }
 
   /**
@@ -150,16 +146,6 @@ function Juego(Props) {
   }
 
   /**
-   * On Change Difficulty,
-   * 1. Update 'Difficulty' level
-   * 2. Create New Game
-   */
-  function onChangeDifficulty(e) {
-    setDifficulty(e.target.value);
-    _createNewGame(e);
-  }
-
-  /**
    * On Click of Number in Status section,
    * either fill cell or set the number.
    */
@@ -168,29 +154,6 @@ function Juego(Props) {
       setNumberSelected(number);
     } else if (cellSelected !== -1) {
       _userFillCell(cellSelected, number);
-    }
-  }
-
-  /**
-   * On Click Undo,
-   * try to Undo the latest change.
-   */
-  function onClickUndo() {
-    if (history.length) {
-      let tempHistory = history.slice();
-      let tempArray = tempHistory.pop();
-      setHistory(tempHistory);
-      if (tempArray !== undefined) setGameArray(tempArray);
-    }
-  }
-
-  /**
-   * On Click Erase,
-   * try to delete the cell.
-   */
-  function onClickErase() {
-    if (cellSelected !== -1 && gameArray[cellSelected] !== '0') {
-      _fillCell(cellSelected, '0');
     }
   }
 
@@ -205,54 +168,31 @@ function Juego(Props) {
   }
 
   /**
-   * Toggle Mistakes Mode
-   */
-  function onClickMistakesMode() {
-    setMistakesMode(!mistakesMode);
-  }
-
-  /**
-   * Toggle Fast Mode
-   */
-  function onClickFastMode() {
-    if (fastMode) {
-      setNumberSelected('0');
-    }
-    setCellSelected(-1);
-    setFastMode(!fastMode);
-  }
-
-  /**
    * Close the overlay on Click.
    */
   function onClickOverlay() {
     setOverlay(false);
     _createNewGame();
+    setTimeSec(0);
+    setTime(0);
   }
-
-  
+ 
   useEffect(() => {
-    let interval = null;
+    
     _createNewGame();
 
-    if (isRunning) {
-      interval = setInterval(() => {
-        setTimeSec((prevTimeSec) => prevTimeSec + 1);
-      }, 1000);
-    }
+    interval = setInterval(() => {
+      setTimeSec((prevTimeSec) => prevTimeSec + 1);
+    }, 1000);
 
     return () => clearInterval(interval);
   }, []);
-
-  function handleStop() {
-    setIsRunning(false);
-  };
 
 
   return (
     <div>
       <MenuPrincipal />
-      <Header onClick={onClickNewGame} />
+      <Header onClick={onClickNewGame} onClicSolvedGame={onClickHint} />
       <Grid container spacing={2}>
         <Grid xs={8}>
           <div className={overlay ? 'container blur' : 'container'}>
@@ -260,13 +200,8 @@ function Juego(Props) {
               <GameSection onClick={indexOfArray => onClickCell(indexOfArray)} />
               <StatusSection
                 onClickNumber={number => onClickNumber(number)}
-                onChange={e => onChangeDifficulty(e)}
-                onClickUndo={onClickUndo}
-                onClickErase={onClickErase}
                 onClickHint={onClickHint}
-                onClickMistakesMode={onClickMistakesMode}
-                onClickFastMode={onClickFastMode}
-                timeSec={timeSec}
+                timeSec={time > 0 ? time: timeSec}
               />
             </div>
           </div>
@@ -275,14 +210,24 @@ function Juego(Props) {
           <Clasificaciones rankingName="Ranking-sudoku" />
         </Grid>
       </Grid>
-      <div
-        className={overlay ? 'overlay overlay--visible' : 'overlay'}
-        onClick={onClickOverlay}
-      >
-        <h2 className="overlay__text">
-          Felicidades lo resolviste
-        </h2>
-      </div>
+      <Dialog
+          open={overlay}
+          onClose={onClickOverlay}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogTitle id="alert-dialog-title">
+            {"Felicidades!"}
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-description">
+              Resolviste el sudoku en{' '} {formatTime(time)}!
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={onClickOverlay}>Cerrar</Button>
+          </DialogActions>
+        </Dialog>
     </div>
   );
 }

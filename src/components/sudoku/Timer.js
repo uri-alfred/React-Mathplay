@@ -9,6 +9,8 @@ export const Timer = (props) => {
 
   return (
     <>
+      <br />
+      <br />
       <Chip
         sx={{ my: 2, color: 'black', display: 'block' }}
         style={{ fontSize: 16}}

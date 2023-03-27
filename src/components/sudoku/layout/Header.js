@@ -22,6 +22,9 @@ export const Header = props => {
           <Button className='botones_azul' onClick={props.onClick}>
           <New className="menuIcon" /> Nuevo juego
           </Button>
+          <Button variant="outlined" color="error" className='btn-solved-games' onClick={props.onClicSolvedGame}>
+            Resolver posición
+          </Button>
         </Grid>
       </Grid>
 

@@ -22,7 +22,7 @@ import { formatTime } from '../../libs/formatos';
 
 class Game extends Component {
   static contextType = authContext;
-  
+
   constructor(props, context) {
     super(props, context);
 
@@ -37,6 +37,7 @@ class Game extends Component {
       dialogOpen: false,
       snackbarOpen: false,
       snackbarText: '',
+      isRunning: true,
     };
 
     document.addEventListener('keydown', this.keyDownListener);
@@ -59,7 +60,12 @@ class Game extends Component {
   // Finalizar juego si presiona CTRL + ALT + F
   keyDownListener = key => {
     if (key.ctrlKey && key.altKey && key.code === 'KeyF') {
-      const { original, gridSize, tileSize } = this.props;
+      this.solvedGameInstant();
+    }
+  };
+
+  solvedGameInstant = () => {
+    const { original, gridSize, tileSize } = this.props;
       const solvedTiles = this.generateTiles(original, gridSize, tileSize).map((
         tile,
         index,
@@ -77,8 +83,7 @@ class Game extends Component {
         tiles: solvedTiles,
         dialogOpen: true,
       });
-    }
-  };
+  }
 
   handleDialogClose = () => {
     this.setState({
@@ -144,20 +149,20 @@ class Game extends Component {
 
   saveScore = () => {
 
-    if( this.state.seconds > 0 && this.state.moves > 0) {
+    if (this.state.seconds > 0 && this.state.moves > 0) {
       const rankingRef = ref(db, "Ranking-15puzzle");
       const newScoreRef = push(rankingRef);
-  
+
       const newScore = {
         username: this.context.user.displayName,
         time: this.state.seconds,
         moves: this.state.moves
       };
-  
+
       set(newScoreRef, newScore);
 
     }
-    
+
   }
 
   /**
@@ -174,11 +179,11 @@ class Game extends Component {
   }
 
   setTimer() {
-    this.timerId = setInterval(
-      () => {
+    this.timerId = setInterval(() => {
+      if (this.state.isRunning) {
         this.addTimer();
-      },
-      1000,
+      }
+      }, 1000,
     );
   }
 
@@ -192,10 +197,13 @@ class Game extends Component {
 
       // valida si se pausa o se continua con el juego
       if (prevState.gameState === GAME_STARTED) {
+        this.setState({ isRunning: false });
         clearInterval(this.timerId);
         newGameState = GAME_PAUSED;
         newSnackbarText = 'El juego ha sido pausado.';
       } else {
+        this.setState({ isRunning: true });
+        clearInterval(this.timerId);
         this.setTimer();
         newGameState = GAME_STARTED;
         newSnackbarText = 'Juego iniciado!';
@@ -272,6 +280,7 @@ class Game extends Component {
           onPauseClick={this.onPauseClick}
           onNewClick={onNewClick}
           gameState={this.state.gameState}
+          onSolvedGame={this.solvedGameInstant}
         />
         <Tablero
           gridSize={gridSize}
@@ -280,27 +289,27 @@ class Game extends Component {
           onTileClick={this.onTileClick}
         />
         <Dialog
-        open={this.state.dialogOpen}
-        onClose={this.handleDialogClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title">
-          {"Felicidades!"}
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-          Resolviste el puzzle en{' '} {this.state.moves} {' '}movimientos en{' '} {formatTime(this.state.seconds)}!
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={this.handleDialogClose}>Cerrar</Button>
-        </DialogActions>
-      </Dialog>
+          open={this.state.dialogOpen}
+          onClose={this.handleDialogClose}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogTitle id="alert-dialog-title">
+            {"Felicidades!"}
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-description">
+              Resolviste el puzzle en{' '} {this.state.moves} {' '}movimientos en{' '} {formatTime(this.state.seconds)}!
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={this.handleDialogClose}>Cerrar</Button>
+          </DialogActions>
+        </Dialog>
         <Snackbar
           open={this.state.snackbarOpen}
           message={this.state.snackbarText}
-          onRequestClose={this.handleSnackbarClose}
+          onClose={this.handleSnackbarClose}
         />
       </div>
     );

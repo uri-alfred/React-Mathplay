@@ -61,3 +61,12 @@ body {
 .item_with_icon {
   display: flex !important;
 }
+
+.span-user-menu {
+  font-weight: bold;
+}
+
+.btn-solved-games {
+  height: 35px;
+  margin-top: 16px !important;
+}

@@ -137,6 +137,7 @@ function MenuPrincipal() {
           </Box>
 
           <Box sx={{ flexGrow: 0 }}>
+            <span className='span-user-menu'>{user.displayName}  </span>
             <Tooltip title="Abrir ajustes">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                 <Avatar src={user.photoURL} />

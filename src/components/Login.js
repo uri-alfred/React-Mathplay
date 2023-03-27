@@ -34,8 +34,14 @@ export default function Login() {
         case "auth/user-not-found":
           setError("No existe un usuario con ese correo.");
           break;
+        case "auth/invalid-email":
+          setError("Se requiere ingresar un correo.");
+          break;
         case "auth/wrong-password":
           setError("La contraseña es invalida.");
+          break;
+        case "auth/internal-error":
+          setError("Se requiere ingresar una contraseña.");
           break;
 
         default:
