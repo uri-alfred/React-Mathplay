@@ -43,10 +43,14 @@ class Game extends Component {
     document.addEventListener('keydown', this.keyDownListener);
   }
 
+  // función que se ejecuta al compilar el componente
+  // se reciben propiedades de un componente padre
   componentWillReceiveProps(nextProps) {
+    // variables para las losas
     const { tileSize, gridSize } = this.props;
     const newTiles = this.generateTiles(nextProps.numbers, gridSize, tileSize);
 
+    // se declaran valores iniciales de variables a usar
     this.setState({
       gameState: GAME_IDLE,
       tiles: newTiles,
@@ -64,6 +68,7 @@ class Game extends Component {
     }
   };
 
+  // función para resolver el juego, ajusta las posiciones del juego a el arreglo original
   solvedGameInstant = () => {
     const { original, gridSize, tileSize } = this.props;
       const solvedTiles = this.generateTiles(original, gridSize, tileSize).map((
@@ -73,11 +78,12 @@ class Game extends Component {
         tile.number = index + 1;
         return Object.assign({}, tile);
       });
-
+      // guarda los datos de puntuación y usuario en BD
       this.saveScore();
-
+      // limpia el intervalo, reinicia el tiempo
       clearInterval(this.timerId);
-
+      // cambia los valores a juego terminado, posiciones de losas en orden correcto y 
+      // muestra el modal
       this.setState({
         gameState: GAME_OVER,
         tiles: solvedTiles,
@@ -85,12 +91,15 @@ class Game extends Component {
       });
   }
 
+  // función para cerrar el modal
   handleDialogClose = () => {
     this.setState({
       dialogOpen: false,
     });
   };
 
+  // función para cerrar el mensaje de abajo a 
+  // la izquierda cuando se pausa o continua el juego
   handleSnackbarClose = reason => {
     this.setState({
       snackbarOpen: false,
@@ -98,18 +107,18 @@ class Game extends Component {
   };
 
   /**
-   * Metodo que genera el arreglo de fichas para el puzzle
+   * Metodo que genera el arreglo de losas para el puzzle
    * @param {*} numbers numero de piezas
    * @param {*} gridSize tamaño del grid
-   * @param {*} tileSize tamaño en pixeles de las piezas
-   * @returns regresa el arreglo de piezas
+   * @param {*} tileSize tamaño en pixeles de las losas
+   * @returns regresa el arreglo de losas
    */
   generateTiles(numbers, gridSize, tileSize) {
-    const tiles = []; // arreglo de piezas
-
-    // recorre el numero de piezas
+    const tiles = []; // arreglo de losas temporal
+    
+    // recorre el numero de losas
     numbers.forEach((number, index) => {
-      //genera cada pieza con sus propiedades para mostrar en el front
+      //genera cada losa con sus propiedades para mostrar en el front
       tiles[index] = {
         ...getTileCoords(index, gridSize, tileSize),
         width: this.props.tileSize,
@@ -126,12 +135,12 @@ class Game extends Component {
    * @param {*} tiles arreglo de piezas
    * @returns Regresa un verdadero o falso si se completo el juego o no
    * 
-   * ## Pendiente: validar en caso de que nunca se pueda completar
    */
   isGameOver(tiles) {
     /**
-     * se crea una variable arreglo que filtra el arreglo original
-     * para obtener las piezas en orden (desde 1 al 15)
+     * se crea una variable numerica que filtra el arreglo original
+     * para obtener las losas en orden (desde 1 al 15), con esto sabemos
+     * el numero de losas colocadas en orden 1,2,3,4...n
      */
     const correctedTiles = tiles.filter(tile => {
       return tile.tileId + 1 === tile.number;
@@ -140,6 +149,7 @@ class Game extends Component {
     // valida si coincide el arreglo ordenado con el tamaño del grid
     if (correctedTiles.length === (this.props.gridSize) ** 2) {
       clearInterval(this.timerId);
+      clearInterval(this.timerId);
       this.saveScore();
       return true;
     } else {
@@ -147,12 +157,17 @@ class Game extends Component {
     }
   }
 
+  /**
+   * Función para guardar el nombre de usuario, movimientos y tiempo al completar el juego
+   */
   saveScore = () => {
-
+    // valida que el tiempo y movimientos sea mayor a 0
+    // (por si se completa el juego sin haber movido una pieza con el botón de autocompletado
+    // para pruebas y no registrar valores con 0 movimientos en 0 tiempo)
     if (this.state.seconds > 0 && this.state.moves > 0) {
       const rankingRef = ref(db, "Ranking-15puzzle");
       const newScoreRef = push(rankingRef);
-
+      // objeto del registro a guardar
       const newScore = {
         username: this.context.user.displayName,
         time: this.state.seconds,
@@ -166,7 +181,7 @@ class Game extends Component {
   }
 
   /**
-   * Metodo que agrega el timer y empieza a contar el tiempo en segundos
+   * Metodo que agrega el timer, la variable seconds de state se incrementa de 1 en 1
    */
   addTimer() {
     this.setState(prevState => {
@@ -178,6 +193,7 @@ class Game extends Component {
     clearInterval(this.timerId);
   }
 
+  // metodo que ejecuta el intervalo de tiempo en 1000 milisegundos
   setTimer() {
     this.timerId = setInterval(() => {
       if (this.state.isRunning) {
@@ -217,32 +233,40 @@ class Game extends Component {
     });
   };
 
+  /**
+   * función para mover las losas
+   * 
+   * @param {*} tile objeto de la loza que contiene la posición en el tablero
+   * @returns 
+   */
   onTileClick = tile => {
-    if (
-      this.state.gameState === GAME_OVER || this.state.gameState === GAME_PAUSED
-    ) {
+    // valida si el juego ha sido terminado o pausado
+    if ( this.state.gameState === GAME_OVER || this.state.gameState === GAME_PAUSED ) {
+      // si cumple alguna de las 2 condiciones termina la función
+      // esto para que no se puedan seguir moviendo las losas del juego cuando
+      // este en pausa o se complete el juego
       return;
     }
 
-    // Agrega Timer en caso de ser el primer click
+    // Valida si se hace el primer click (primer movimiento)
     if (this.state.moves === 0) {
+      // Inicia el tiempo con el primer movimiento
       this.setTimer();
     }
 
     const { gridSize } = this.props;
 
-    // Busca la ficha vacia
+    // Busca la losa vacia
     const emptyTile = this.state.tiles.find(t => t.number === gridSize ** 2);
+    // obtiene la posición (indice en el arreglo) de la losa vacia
     const emptyTileIndex = this.state.tiles.indexOf(emptyTile);
-
-    // Busca el indice de la ficha
+    // Busca el indice de la losa seleccionada
     const tileIndex = this.state.tiles.findIndex(t => t.number === tile.number);
-
-    // Mivimiento de la ficha al lugar vacio, determina la direccion en que se va a mover
+    // Mivimiento de la losa al lugar vacio
     const d = distanceBetween(tile, emptyTile);
     if (d.neighbours) {
       let t = Array.from(this.state.tiles).map(t => ({ ...t }));
-
+      // determina la direccion en que se va a mover
       invert(t, emptyTileIndex, tileIndex, [
         'top',
         'left',
@@ -250,7 +274,7 @@ class Game extends Component {
         'column',
         'tileId',
       ]);
-
+      // valida si se ha completado el juego
       const checkGameOver = this.isGameOver(t);
 
       this.setState({

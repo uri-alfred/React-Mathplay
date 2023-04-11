@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import moment from 'moment';
 import { Header } from './layout/Header';
 import { GameSection } from './layout/GameSection';
 import { StatusSection } from './layout/StatusSection';
@@ -20,7 +19,6 @@ function Juego() {
     gameArray,
     setGameArray,
     fastMode,
-    setFastMode,
     cellSelected,
     setCellSelected,
     initArray,
@@ -38,16 +36,16 @@ function Juego() {
   let interval = null;
 
   /**
-   * Creates a new game and initializes the state variables.
+   * Función para crear un nuevo juego e inicializar variables.
    */
-  function _createNewGame(e) {
-    let [temporaryInitArray, temporarySolvedArray] = getUniqueSudoku(
-      difficulty,
-      e,
-    );
-
+  function createNewGame(e) {
+    // se genera el arreglo inicial del juego y el arreglo de solución
+    let [temporaryInitArray, temporarySolvedArray] = getUniqueSudoku(difficulty,e,);
+    // se guarda la variable del juego inicial (por si en un futuro se quiera reiniciar el juego)
     setInitArray(temporaryInitArray);
+    // se guarda la variable del juego (este es el que se cambian los valores con los numeros)
     setGameArray(temporaryInitArray);
+    // se guarda la variable del juego resuelto
     setSolvedArray(temporarySolvedArray);
     setNumberSelected('0');
     setCellSelected(-1);
@@ -58,9 +56,13 @@ function Juego() {
   }
 
   /**
-   * Checks if the game is solved.
+   * Función para validar si se resolvio el juego.
    */
-  function _isSolved(index, value) {
+  function isSolved(index, value) {
+    // reccorre todo el arreglo del juego validando si el juego actual
+    // contiene los valores del arreglo resuelto o si con el ultimo valor ingresado se resuelve
+    // en caso de que este completamente resuelto el juego devuelve un true
+    // en caso contrario un false y continua con el juego
     if (
       gameArray.every((cell, cellIndex) => {
         if (cellIndex === index) return value === solvedArray[cellIndex];
@@ -73,23 +75,25 @@ function Juego() {
   }
 
   /**
-   * Fills the cell with the given 'value'
-   * Used to Fill / Erase as required.
+   * Función que rellena la posición con el numero seleccionado
    */
-  function _fillCell(index, value) {
+  function fillCell(index, value) {
+    // valida si es una de las celdas donde se puede agregar el numero 
+    // (si el valor al iniciar el juego es 0)
     if (initArray[index] === '0') {
-      // Direct copy results in interesting set of problems, investigate more!
+      // se obtiene el arreglo del juego y del historial de cambios en el arreglo en
+      // variables temporales
       let tempArray = gameArray.slice();
       let tempHistory = history.slice();
 
-      // Can't use tempArray here, due to Side effect below!!
+      // se agrega el arreglo actual del juego a la variable temporal del historial
       tempHistory.push(gameArray.slice());
       setHistory(tempHistory);
-
+      // se agrega el numero seleccionado al arreglo del juego
       tempArray[index] = value;
       setGameArray(tempArray);
-
-      if (_isSolved(index, value)) {
+      // valida si se completa el juego
+      if (isSolved(index, value)) {
         setOverlay(true);
         setWon(true);
         saveScore();
@@ -97,73 +101,76 @@ function Juego() {
     }
   }
 
+  /**
+   * Función que guarda los datos del usuario y tiempo en que completo el juego
+   */
   function saveScore() {
+    // valida si el tiempo es mayor a 0 para evitar registros indeseados
     if( timeSec > 0 ) {
       const rankingRef = ref(db, "Ranking-sudoku");
       const newScoreRef = push(rankingRef);
       const timeNow = timeSec;
       setTime(timeNow);
+      // se crea el objeto a registrar en BD
       const newScore = {
         username: user.displayName,
         time: timeNow
       };
+      // se sube a la BD
       set(newScoreRef, newScore);
     }
   }
 
   /**
-   * A 'user fill' will be passed on to the
-   * _fillCell function above.
+   * Función para identificar si el usuario fue quien lleno la celda
    */
-  function _userFillCell(index, value) {
+  function userFillCell(index, value) {
     if (mistakesMode) {
       if (value === solvedArray[index]) {
-        _fillCell(index, value);
+        fillCell(index, value);
       } else {
         // TODO: Flash - Mistakes not allowed in Mistakes Mode
       }
     } else {
-      _fillCell(index, value);
+      fillCell(index, value);
     }
   }
 
   /**
-   * On Click of 'New Game' link,
-   * create a new game.
+   * Funcion para crear un nuevo juego 
+   * (la que acciona el botón)
    */
   function onClickNewGame() {
-    _createNewGame();
+    createNewGame();
   }
 
   /**
-   * On Click of a Game cell.
+   * Función que llena la celda con el numero seleccionado
    */
   function onClickCell(indexOfArray) {
     if (fastMode && numberSelected !== '0') {
-      _userFillCell(indexOfArray, numberSelected);
+      userFillCell(indexOfArray, numberSelected);
     }
     setCellSelected(indexOfArray);
   }
 
   /**
-   * On Click of Number in Status section,
-   * either fill cell or set the number.
+   * Función que obtiene el numero seleccionado 
    */
   function onClickNumber(number) {
     if (fastMode) {
       setNumberSelected(number);
     } else if (cellSelected !== -1) {
-      _userFillCell(cellSelected, number);
+      userFillCell(cellSelected, number);
     }
   }
 
   /**
-   * On Click Hint,
-   * fill the selected cell if its empty or wrong number is filled.
+   * Función para autocompletar la celda seleccionada.
    */
   function onClickHint() {
     if (cellSelected !== -1) {
-      _fillCell(cellSelected, solvedArray[cellSelected]);
+      fillCell(cellSelected, solvedArray[cellSelected]);
     }
   }
 
@@ -172,15 +179,18 @@ function Juego() {
    */
   function onClickOverlay() {
     setOverlay(false);
-    _createNewGame();
+    createNewGame();
     setTimeSec(0);
     setTime(0);
   }
  
+  /**
+   * Función que se ejecuta al cargar el componente
+   */
   useEffect(() => {
-    
-    _createNewGame();
-
+    // crea un nuevo juego
+    createNewGame();
+    // inicia el contador de tiempo
     interval = setInterval(() => {
       setTimeSec((prevTimeSec) => prevTimeSec + 1);
     }, 1000);
