@@ -17,7 +17,7 @@ import { validaInputEmail, validaInputPass } from '../libs/Validaciones';
 
 export default function Login() {
 
-  const { login, loginWithGoogle } = useAuth();
+  const { login, loginWithGoogle, setRolByUser, setInfoUser } = useAuth();
   const navigate = useNavigate();
   const [error, setError] = useState();
   const [email, setEmail] = useState('');
@@ -56,6 +56,7 @@ export default function Login() {
       if (!emailError.error && !passError.error) {
         await login(email, pass);
         navigate("/");
+        await setInfoUser();
       }
     } catch (error) {
 
@@ -86,6 +87,8 @@ export default function Login() {
     try {
       await loginWithGoogle();
       navigate("/");
+      await setRolByUser();
+      await setInfoUser();
     } catch (error) {
       switch (error.code) {
         case "auth/popup-closed-by-user":
@@ -93,6 +96,7 @@ export default function Login() {
           break;
 
         default:
+          console.log(error.message);
           setError("Error desconocido al intentar iniciar con una cuenta de Google, espere un momento y vuelva a intentar.")
           break;
       }

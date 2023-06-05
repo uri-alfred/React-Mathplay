@@ -4,7 +4,7 @@ import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import ButtonBase from '@mui/material/ButtonBase';
 import Typography from '@mui/material/Typography';
-import MenuPrincipal from './commons/MenuPrincipal';
+import MainCard from './commons/MainCard';
 // import Footer from './Commons/Footer';
 
 const images = [
@@ -97,14 +97,12 @@ export default function Principal() {
 
   return (
     <div>
-      <MenuPrincipal />
-
       <br />
       <div className='titulos'>
         <h1>Escoger juego</h1> 
       </div>
       <br /><br />
-
+      <MainCard>
       <Box
         sx={{ display: 'flex', flexWrap: 'wrap', minWidth: 300, width: '100%' }}
       >
@@ -138,6 +136,8 @@ export default function Principal() {
           </ImageButton> 
         ))}
       </Box>
+      </MainCard>
+      
 
       {/* <Footer /> */}
     </div>

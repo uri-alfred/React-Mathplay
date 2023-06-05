@@ -4,13 +4,13 @@ import { GameSection } from './layout/GameSection';
 import { StatusSection } from './layout/StatusSection';
 import { getUniqueSudoku } from './solver/UniqueSudoku';
 import { useSudokuContext } from './context/SudokuContext.js';
-import MenuPrincipal from '../commons/MenuPrincipal';
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Grid } from '@mui/material';
 import Clasificaciones from '../commons/Clasificaciones';
 import { useAuth } from '../../context/authContext';
 import { db } from '../../firebase';
 import { push, ref, set } from 'firebase/database';
 import { formatTime } from '../../libs/formatos';
+import MainCard from '../commons/MainCard';
 
 function Juego() {
   let {
@@ -201,7 +201,12 @@ function Juego() {
 
   return (
     <div>
-      <MenuPrincipal />
+      <div> <br /> </div>
+      <div className='titulos'>
+            <h1>Sudoku</h1>
+          </div>
+          <div> <br /> </div>
+      <MainCard>
       <Header onClick={onClickNewGame} onClicSolvedGame={onClickHint} />
       <Grid container spacing={2}>
         <Grid xs={8}>
@@ -238,6 +243,7 @@ function Juego() {
             <Button onClick={onClickOverlay}>Cerrar</Button>
           </DialogActions>
         </Dialog>
+      </MainCard>
     </div>
   );
 }

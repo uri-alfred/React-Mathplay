@@ -6,6 +6,7 @@ import { getAnalytics } from "firebase/analytics";
 // ---
 import { getAuth } from "firebase/auth";
 import { getDatabase } from "firebase/database";
+import { getFirestore} from "firebase/firestore";
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -29,4 +30,8 @@ const analytics = getAnalytics(app);
 // -- variable auth para la autenticación de usuarios con firebase autentication
 export const auth = getAuth(app);
 // -- variable db para la base de datos con firebase realtime database
+// para almacenamiento y actualización de datos en tiempo real
 export const db = getDatabase(app);
+// -- variable fstore para la base de datos firestore database
+// para almacenamiento de datos lenta
+export const fstore = getFirestore(app);

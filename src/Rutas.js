@@ -9,16 +9,23 @@ import Registro from './components/Registro';
 import { AuthProvider } from './context/authContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import RecuperarPass from './components/RecuperarPass';
+import GUsers from './components/GUsers/GUsuarios';
+import MainLayout from './components/layout';
+import Estadisticas from './components/Estadisticas/Estadisticas';
 
 function Rutas() {
   return (
     <div>
       <AuthProvider>
         <Routes>
-          <Route path="/" element={<ProtectedRoute><Principal /></ProtectedRoute>} exact />
-          <Route path="/puzzle" element={<ProtectedRoute><Puzzle /></ProtectedRoute>} />
-          <Route path="/sudoku" element={<ProtectedRoute><Sudoku /></ProtectedRoute>} />
-          <Route path="/sopanumeros" element={<ProtectedRoute><Sopa /></ProtectedRoute>} />
+          <Route path="/" element={<ProtectedRoute><MainLayout /></ProtectedRoute>} >
+            <Route path="/" element={<Principal />} exact />
+            <Route path="/puzzle" element={<Puzzle />} />
+            <Route path="/sudoku" element={<Sudoku />} />
+            <Route path="/sopanumeros" element={<Sopa />} />
+            <Route path="/Usuarios" element={<GUsers />} />
+            <Route path="/Estadisticas" element={<Estadisticas />} />
+          </Route>
           <Route path="/login" element={<Login />} />
           <Route path="/registro" element={<Registro />} />
           <Route path="/reset-pass" element={<RecuperarPass />} />

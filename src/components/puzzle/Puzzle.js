@@ -4,14 +4,15 @@ import Game from './Game';
 // import Footer from '../Commons/Footer';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
-import MenuPrincipal from '../commons/MenuPrincipal';
-import { Grid } from '@mui/material';
+import MainCard from '../commons/MainCard';
+
+const levelPuzzle = 4;
 
 class Puzzle extends Component {
   constructor(props) {
     super(props);
 
-    const level = props.level ? props.level : levelFactory(4 ** 2);
+    const level = props.level ? props.level : levelFactory(levelPuzzle ** 2);
     const originalLevel = Object.assign({}, level);
 
     this.state = {
@@ -38,7 +39,7 @@ class Puzzle extends Component {
    * ## Pendiente: Seguir trabajando con los niveles (levelFactory)
    */
   onNewClick = () => {
-    const newLevel = levelFactory(4 ** 2);
+    const newLevel = levelFactory(levelPuzzle ** 2);
     const newOriginalLevel = Object.assign({}, newLevel);
     this.setState({
       level: newLevel,
@@ -51,25 +52,23 @@ class Puzzle extends Component {
 
     return (
       <div className={className}>
-        <MenuPrincipal />
+        <div> <br /> </div>
         <br />
+        <div className='titulos'>
+          <h1>15 Puzzle</h1>
+        </div>
         <br />
-        <Grid container spacing={2}>
-          <Grid xs={12}>
-            <div className='titulos'>
-              <h1>15 Puzzle</h1>
-            </div>
-          </Grid>
-        </Grid>
-        <br />
-        <Game
-          gridSize={4}
-          tileSize={90}
-          numbers={this.state.level.tileSet}
-          onResetClick={this.onResetClick}
-          onNewClick={this.onNewClick}
-          original={this.state.original.tileSet}
-        />
+        <div> <br /> </div>
+        <MainCard>
+          <Game
+            gridSize={levelPuzzle}
+            tileSize={90}
+            numbers={this.state.level.tileSet}
+            onResetClick={this.onResetClick}
+            onNewClick={this.onNewClick}
+            original={this.state.original.tileSet}
+          />
+        </MainCard>
         {/* <Footer /> */}
       </div>
     );

@@ -12,8 +12,13 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import { useAuth } from '../../context/authContext';
+import { useEffect } from 'react';
 
-const pages = ['Inicio'];
+let pages = [
+  {nombre: 'Inicio', path: '/'}, 
+  {nombre: 'Concentrado de datos', path: '/test'},
+  {nombre: 'Usuarios', path: '/Usuarios'}
+];
 const settings = [
   // 'Perfil', 
 'Cerrar sesión'];
@@ -21,6 +26,7 @@ const settings = [
 function MenuPrincipal() {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
+  const [userInfo, setUserInfo] = React.useState(null);
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
@@ -37,7 +43,7 @@ function MenuPrincipal() {
     setAnchorElUser(null);
   };
 
-  const { logout, user } = useAuth();
+  const { logout, user, getInfoUser } = useAuth();
   
   const handleLogout = async () => {
     try {
@@ -46,6 +52,29 @@ function MenuPrincipal() {
       console.error(error.message);
     }
   };
+
+ 
+
+  useEffect(() => {
+    getInfoUser(user).then(filtraPermisos);
+
+    function filtraPermisos(usu) {
+      console.log(usu);
+      // Valida permisos del menu
+      if(usu.rol !== "MP-AMN") {
+        // filtra las opciones del menu
+        pages = pages.filter(function(item) {
+          return item.nombre !== 'Usuarios';
+        });
+      }
+      if(usu.rol !== "MP-AMN" && usu.rol !== "MP-MTR") {
+        // filtra las opciones del menu
+        pages = pages.filter(function(item) {
+          return item.nombre !== 'Concentrado de datos';
+        });
+      }
+    }
+  }, []);
 
   return (
     <AppBar position="static">
@@ -99,8 +128,8 @@ function MenuPrincipal() {
               }}
             >
               {pages.map((page) => (
-                <MenuItem key={page} onClick={handleCloseNavMenu} >
-                  <Typography textAlign="center">{page}</Typography>
+                <MenuItem key={page.nombre} onClick={handleCloseNavMenu} >
+                  <Typography textAlign="center">{page.nombre}</Typography>
                 </MenuItem>
               ))}
             </Menu>
@@ -126,12 +155,12 @@ function MenuPrincipal() {
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
             {pages.map((page) => (
               <Button
-                key={page}
-                onClick={handleCloseNavMenu}
-                sx={{ my: 2, color: 'white', display: 'block' }}
-                href="/"
+              key={page.nombre}
+              onClick={handleCloseNavMenu}
+              sx={{ my: 2, color: 'white', display: 'block' }}
+              href={page.path}
               >
-                {page}
+                {page.nombre}
               </Button>
             ))}
           </Box>
