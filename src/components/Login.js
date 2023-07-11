@@ -1,4 +1,4 @@
-import { React, useState } from 'react';
+import { React, useEffect, useState } from 'react';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Link from '@mui/material/Link';
@@ -17,7 +17,7 @@ import { validaInputEmail, validaInputPass } from '../libs/Validaciones';
 
 export default function Login() {
 
-  const { login, loginWithGoogle, setRolByUser, setInfoUser } = useAuth();
+  const { login, loginWithGoogle, setRolByUser, user } = useAuth();
   const navigate = useNavigate();
   const [error, setError] = useState();
   const [email, setEmail] = useState('');
@@ -55,8 +55,7 @@ export default function Login() {
       }
       if (!emailError.error && !passError.error) {
         await login(email, pass);
-        navigate("/");
-        await setInfoUser();
+        
       }
     } catch (error) {
 
@@ -86,9 +85,6 @@ export default function Login() {
     setError('');
     try {
       await loginWithGoogle();
-      navigate("/");
-      await setRolByUser();
-      await setInfoUser();
     } catch (error) {
       switch (error.code) {
         case "auth/popup-closed-by-user":
@@ -102,6 +98,15 @@ export default function Login() {
       }
     }
   };
+
+  useEffect(() => {
+    // Esta función se ejecutará cada vez que user cambie
+    if (user !== null) {
+      // Si user tiene un valor, navegar a la ruta "/"
+      setRolByUser();
+      navigate("/");
+    }
+  }, [user]);
 
   return (
     <Grid container component="main" sx={{ height: '100vh' }}>

@@ -1,9 +1,5 @@
 import React from 'react';
-// import { Difficulty } from '../Difficulty';
-import { Timer } from '../Timer';
 import { Numbers } from '../Numbers';
-import { Action } from '../Action';
-// import { Mode } from '../Mode';
 
 /**
  * React component for the Status Section.
@@ -11,16 +7,14 @@ import { Action } from '../Action';
 export const StatusSection = props => {
   return (
     <section className="status">
-      {/* <Difficulty onChange={props.onChange} /> */}
-      <Timer timeSec={props.timeSec}/>
+      <br />
+      <br />
+      <div className='titulos'>
+        <b>Para jugar:</b><br />
+        <p>Selecciona una celda vacía y da click a uno de estos numeros.</p>
+      </div>
+      <br />
       <Numbers onClickNumber={number => props.onClickNumber(number)} />
-      <div className="status__actions">
-        {/* <Action action="undo" onClickAction={props.onClickUndo} />
-        <Action action="erase" onClickAction={props.onClickErase} /> */}
-        {/* <Action action="hint" onClickAction={props.onClickHint} /> */}
-        {/* <Mode mode="mistakes" onClickMode={props.onClickMistakesMode} />
-        <Mode mode="fast" onClickMode={props.onClickFastMode} /> */}
-      </div> 
     </section>
   );
 };

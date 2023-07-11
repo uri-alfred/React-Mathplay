@@ -15,9 +15,11 @@ import Button from '@mui/material/Button';
 import Snackbar from '@mui/material/Snackbar';
 import { db } from '../../firebase';
 import { ref, push, set } from 'firebase/database';
-import { DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
+import { DialogActions, DialogContent, DialogContentText, DialogTitle, Grid } from '@mui/material';
 import { authContext } from '../../context/authContext';
 import { formatTime } from '../../libs/formatos';
+import OpcionesPuzzle from './OpcionesPuzzle';
+import Clasificaciones from '../commons/Clasificaciones';
 
 
 class Game extends Component {
@@ -28,6 +30,7 @@ class Game extends Component {
 
     const { numbers, tileSize, gridSize, moves, seconds } = props;
     const tiles = this.generateTiles(numbers, gridSize, tileSize);
+    // console.log("level: ", gridSize);
 
     this.state = {
       tiles,
@@ -37,10 +40,29 @@ class Game extends Component {
       dialogOpen: false,
       snackbarOpen: false,
       snackbarText: '',
-      isRunning: true,
+      isRunning: true
     };
 
     document.addEventListener('keydown', this.keyDownListener);
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.gridSize !== this.props.gridSize) {
+      const { numbers, tileSize } = this.props;
+      const tiles = this.generateTiles(numbers, this.props.gridSize, tileSize);
+      // console.log("level: ", this.props.gridSize);
+
+      this.setState({
+        tiles,
+        gameState: GAME_IDLE,
+        moves: 0,
+        seconds: 0,
+        dialogOpen: false,
+        snackbarOpen: false,
+        snackbarText: '',
+        isRunning: true
+      });
+    }
   }
 
   // función que se ejecuta al compilar el componente
@@ -169,9 +191,12 @@ class Game extends Component {
       const newScoreRef = push(rankingRef);
       // objeto del registro a guardar
       const newScore = {
+        uid: this.context.user.uid,
+        email: this.context.user.email,
         username: this.context.user.displayName,
         time: this.state.seconds,
-        moves: this.state.moves
+        moves: this.state.moves,
+        level: this.props.gridSize
       };
 
       set(newScoreRef, newScore);
@@ -293,18 +318,18 @@ class Game extends Component {
       tileSize,
       onResetClick,
       onNewClick,
+      onChangeLevel
     } = this.props;
 
     return (
       <div className={className}>
-        <MenuPuzzle
+        <Grid container justifyContent="center" spacing={4}>
+          <Grid item xs={8}>
+          <MenuPuzzle
           seconds={this.state.seconds}
           moves={this.state.moves}
-          onResetClick={onResetClick}
-          onPauseClick={this.onPauseClick}
-          onNewClick={onNewClick}
-          gameState={this.state.gameState}
-          onSolvedGame={this.solvedGameInstant}
+          onChangeLevel={onChangeLevel}
+          levelPuzzle={gridSize}
         />
         <Tablero
           gridSize={gridSize}
@@ -312,6 +337,19 @@ class Game extends Component {
           tiles={this.state.tiles}
           onTileClick={this.onTileClick}
         />
+        <OpcionesPuzzle
+          onResetClick={onResetClick}
+          onPauseClick={this.onPauseClick}
+          onNewClick={onNewClick}
+          gameState={this.state.gameState}
+          onSolvedGame={this.solvedGameInstant}
+        />
+          </Grid>
+          <Grid item xs={4} >
+            <Clasificaciones rankingName="Ranking-15puzzle" levelToFilter={gridSize} />
+          </Grid>
+        </Grid>
+        
         <Dialog
           open={this.state.dialogOpen}
           onClose={this.handleDialogClose}
@@ -351,7 +389,7 @@ Game.propTypes = {
 
 Game.defaultProps = {
   tileSize: 90,
-  gridSize: 4,
+  gridSize: 3,
   moves: 0,
   seconds: 0,
 };

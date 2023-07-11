@@ -6,12 +6,14 @@ import { Box, List, Typography } from '@mui/material';
 
 // project import
 import NavItem from './NavItem';
+import { useAuth } from '../../../../../context/authContext';
 
 // ==============================|| NAVIGATION - LIST GROUP ||============================== //
 
 const NavGroup = ({ item }) => {
     const menu = useSelector((state) => state.menu);
     const { drawerOpen } = menu;
+    const { user } = useAuth();
 
     const navCollapse = item.children?.map((menuItem) => {
         switch (menuItem.type) {
@@ -22,6 +24,9 @@ const NavGroup = ({ item }) => {
                     </Typography>
                 );
             case 'item':
+                if(user.rol !== "MP-AMN" && menuItem.id === "usuarios") {
+                    break;
+                }
                 return <NavItem key={menuItem.id} item={menuItem} level={1} />;
             default:
                 return (

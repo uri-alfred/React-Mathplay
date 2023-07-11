@@ -9,10 +9,8 @@ export const Timer = (props) => {
 
   return (
     <>
-      <br />
-      <br />
       <Chip
-        sx={{ my: 2, color: 'black', display: 'block' }}
+        sx={{ my: 2, color: 'black', display: 'block', width: '150px' }}
         style={{ fontSize: 16}}
         label={
           <MediaQuery query="(min-width: 772px)" component="span">

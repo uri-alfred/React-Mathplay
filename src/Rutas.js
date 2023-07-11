@@ -12,6 +12,8 @@ import RecuperarPass from './components/RecuperarPass';
 import GUsers from './components/GUsers/GUsuarios';
 import MainLayout from './components/layout';
 import Estadisticas from './components/Estadisticas/Estadisticas';
+import EditUser from './components/GUsers/EditUser';
+import Grupos from './components/grupos/Grupos';
 
 function Rutas() {
   return (
@@ -24,6 +26,8 @@ function Rutas() {
             <Route path="/sudoku" element={<Sudoku />} />
             <Route path="/sopanumeros" element={<Sopa />} />
             <Route path="/Usuarios" element={<GUsers />} />
+            <Route path="/Usuarios/editUser" element={<EditUser />} />
+            <Route path="/Grupos" element={<Grupos />} />
             <Route path="/Estadisticas" element={<Estadisticas />} />
           </Route>
           <Route path="/login" element={<Login />} />

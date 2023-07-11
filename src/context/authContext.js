@@ -49,7 +49,6 @@ export function AuthProvider({ children }) {
 
     const setRolByUser = async () => {
         const rol = await getRolByUid(user.uid);
-        console.log("rol: " + rol);
         if (rol == null) {
             await setUserWithRol(fstore, user);
         }
@@ -78,17 +77,24 @@ export function AuthProvider({ children }) {
         const docCifrada = await getDoc(docRef);
         const data = docCifrada.data();
         let rolByUid = null;
-        if (data != undefined) {
+        if (data !== undefined) {
             rolByUid = data.rol;
         }
         // console.log(docCifrada.data().rol);
         return rolByUid;
     }
 
+    async function getInfoExtrUser(uid) {
+        const docRef = doc(fstore, `usuarios/${uid}`);
+        const docCifrada = await getDoc(docRef);
+        // console.log(docCifrada.data());
+        return docCifrada.data();
+    }
+
     async function setUserWithRol(fstore, user) {
         // se da de alta un registro en BD con el UID y este cuenta con el correo y rol de usuario
         const docuRef = await doc(fstore, `usuarios/${user.uid}`);
-        setDoc(docuRef, { correo: user.email, rol: "MP-A", grupo: '' });
+        setDoc(docuRef, { correo: user.email, rol: "MP-A", grupo: [''] });
     }
 
     const updateInfoUser = async ( user) => {
@@ -98,9 +104,18 @@ export function AuthProvider({ children }) {
     }
 
     useEffect(() => {
-        const unsubuscribe = onAuthStateChanged(auth, currenUser => {
-            setUser(currenUser);
-            //console.log(currenUser);
+        const unsubuscribe = onAuthStateChanged(auth, async currenUser => {
+            // console.log(currenUser);
+            if(currenUser !== null) {
+                const valores = await getInfoExtrUser(currenUser.uid);
+            //     //console.log(valores);
+                setUser({ ...currenUser, 
+                    grupo: valores !== undefined ? valores.grupo : [], 
+                    rol: valores !== undefined ? valores.rol : "MP-A" });
+            } else {
+                setUser(currenUser);
+            }
+            
             setLoading(false);
         });
         return () => unsubuscribe();

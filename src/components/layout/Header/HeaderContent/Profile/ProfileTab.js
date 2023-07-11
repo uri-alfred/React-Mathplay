@@ -25,14 +25,14 @@ const ProfileTab = ({ handleLogout }) => {
                 <ListItemIcon>
                     <EditIcon />
                 </ListItemIcon>
-                <ListItemText primary="Edit Profile" />
+                <ListItemText primary="Perfil" />
             </ListItemButton>
             
             <ListItemButton selected={selectedIndex === 2} onClick={handleLogout}>
                 <ListItemIcon>
                     <LogoutIcon />
                 </ListItemIcon>
-                <ListItemText primary="Logout" />
+                <ListItemText primary="Cerrar sesión" />
             </ListItemButton>
         </List>
     );

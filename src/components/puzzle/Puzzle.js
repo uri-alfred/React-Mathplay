@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import MainCard from '../commons/MainCard';
 
-const levelPuzzle = 4;
+let levelPuzzle = 3;
 
 class Puzzle extends Component {
   constructor(props) {
@@ -20,6 +20,12 @@ class Puzzle extends Component {
       level,
     };
   }
+
+  onChangeLevel = (event) => {
+    levelPuzzle = parseInt(event.target.value);
+    // console.log(levelPuzzle);
+    this.onNewClick();
+  };
 
   /**
    * Metodo para reiniciar el juego
@@ -36,7 +42,6 @@ class Puzzle extends Component {
   /**
    * Metodo para iniciar un nuevo juego
    * Agrega un nuevo orden de piezas
-   * ## Pendiente: Seguir trabajando con los niveles (levelFactory)
    */
   onNewClick = () => {
     const newLevel = levelFactory(levelPuzzle ** 2);
@@ -67,6 +72,7 @@ class Puzzle extends Component {
             onResetClick={this.onResetClick}
             onNewClick={this.onNewClick}
             original={this.state.original.tileSet}
+            onChangeLevel={this.onChangeLevel}
           />
         </MainCard>
         {/* <Footer /> */}

@@ -8,7 +8,8 @@ import { formatTime } from '../../libs/formatos';
 function Clasificaciones(props) {
 
   const {
-    rankingName
+    rankingName,
+    levelToFilter
   } = props;
 
   const [rankings, setRankings] = useState([]);
@@ -20,12 +21,12 @@ function Clasificaciones(props) {
       const rankings = {};
       if (snapshot.exists()) {
         Object.values(data).forEach((ranking) => {
-          const { username, time, moves } = ranking;
-          if (!rankings[username]) {
-            rankings[username] = { username, time, moves };
+          const { username, time, moves, level } = ranking;
+          if (level === levelToFilter && !rankings[username]) {
+            rankings[username] = { username, time, moves, level };
           } else {
             const existingRanking = rankings[username];
-            if (existingRanking.moves > moves || (existingRanking.moves === moves && existingRanking.time > time)) {
+            if (level === levelToFilter && (existingRanking.moves > moves || (existingRanking.moves === moves && existingRanking.time > time))) {
               rankings[username] = { username, time, moves };
             }
           }
@@ -45,7 +46,7 @@ function Clasificaciones(props) {
       const topTenRankings = rankingList.slice(0, 10);
       setRankings(topTenRankings);
     });
-  }, []);
+  }, [levelToFilter]);
 
 
   return (

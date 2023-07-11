@@ -12,22 +12,10 @@ import MainCard from '../commons/MainCard';
 import { Box, Button, Grid, MenuItem, Modal, Stack, TextField, Typography } from '@mui/material';
 import { fstore } from '../../firebase';
 import { collection, getDocs } from 'firebase/firestore';
-import { useAuth } from '../../context/authContext';
-
-const style = {
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: 400,
-  bgcolor: 'background.paper',
-  boxShadow: 24,
-  p: 4,
-};
+import { Link } from 'react-router-dom';
 
 const columns = [
   { id: 'correo', label: 'Correo', minWidth: 150 },
-  { id: 'grupo', label: 'Grupo', minWidth: 100 },
   { id: 'rol', label: 'Rol', minWidth: 100 },
   { id: 'ajustes', label: '', minWidth: 100 },
 ];
@@ -51,20 +39,8 @@ export default function GUsers() {
   const [rows, setRows] = React.useState([]);
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
-  const [userEdit, setUserEdit] = React.useState({});
-  const { updateInfoUser } = useAuth();
-
-  // modal
-  const [open, setOpen] = React.useState(false);
-  function handleOpen(uid) {
-    setUserEdit({});
-    setOpen(true);
-    const userSelected = rows.find(usu => usu.uid === uid);
-    // console.log(userSelected);
-    setUserEdit(userSelected);
-  }
-  const handleClose = () => setOpen(false);
-
+  
+  
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
@@ -74,14 +50,6 @@ export default function GUsers() {
     setPage(0);
   };
 
-  function onChangeGrupo(grupo) {
-    setUserEdit(prevUserEdit => ({ ...prevUserEdit, grupo: grupo }));
-  }
-
-  function onChangeRol(rol) {
-    setUserEdit(prevUserEdit => ({ ...prevUserEdit, rol: rol }));
-  }
-
   async function fetchUsuarios() {
     const usuariosRef = collection(fstore, 'usuarios');
     const querySnapshot = await getDocs(usuariosRef);
@@ -90,11 +58,6 @@ export default function GUsers() {
     setRows(usuarios);
   }
 
-  async function saveChangesUser() {
-    await updateInfoUser(userEdit);
-    handleClose();
-    fetchUsuarios();
-  }
 
   React.useEffect(() => {
     fetchUsuarios();
@@ -142,9 +105,8 @@ export default function GUsers() {
                                 <TableCell key={column.id} align={column.align}>
                                   {column.id === 'ajustes' ?
                                     <Stack direction="row" spacing={2}>
-                                      <Button variant="outlined" color="primary" size="small" startIcon={<EditIcon />} onClick={() => handleOpen(row['uid'])}>
-                                        Editar
-                                      </Button>
+                                      
+                                      <Link variant="outlined" color="primary" size="small" startIcon={<EditIcon />}  to='/Usuarios/editUser' state={{ uidUserEdit: row['uid'] }}>Editar</Link>
                                     </Stack>
                                     : column.id === 'rol' ?
                                       currencies.map((option) => (
@@ -174,67 +136,6 @@ export default function GUsers() {
         </Grid>
         <Grid item xs={2}></Grid>
       </Grid>
-      {/* modal para editar user */}
-      <Modal
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Box sx={style}>
-          <Typography className='titulos' id="modal-modal-title" variant="h6" component="h2">
-            Editar usuario: <br />{userEdit.correo}
-          </Typography>
-          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-              <TextField
-                margin="normal"
-                fullWidth
-                id="grupo"
-                label="Grupo"
-                name="grupo"
-                defaultValue={userEdit.grupo}
-                value={userEdit.grupo}
-                onChange={(e) => onChangeGrupo(e.target.value.trim())}
-              // value={email}
-              // error={errorEmail.error}
-              // helperText={errorEmail.message}
-              />
-              <TextField
-                fullWidth
-                id="select-rol"
-                select
-                label="Rol"
-                // defaultValue={userEdit.rol}
-                value={userEdit.rol}
-                disabled={userEdit.rol === 'MP-AMN' ? true : false}
-                helperText="Selecciona un rol"
-                onChange={(e) => onChangeRol(e.target.value)}
-              >
-                {currencies.map((option) => (
-                  option.value !== 'MP-AMN' ?
-                    <MenuItem key={option.value} value={option.value}>
-                      {option.label}
-                    </MenuItem>
-                    : <MenuItem key={option.value} value={option.value} disabled>
-                      {option.label}
-                    </MenuItem>
-                ))}
-              </TextField>
-              {/* <Stack direction="row" spacing={2}> */}
-                <Button
-                  type='submit'
-                  fullWidth
-                  variant="contained"
-                  sx={{ mt: 3, mb: 2, bgcolor: 'var(--azul-oscuro)' }}
-                  onClick={saveChangesUser}
-                >
-                  Guardar cambios
-                </Button>
-              {/* </Stack> */}
-            
-          </Typography>
-        </Box>
-      </Modal>
     </div>
   );
 }

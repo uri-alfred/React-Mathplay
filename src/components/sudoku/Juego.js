@@ -11,6 +11,7 @@ import { db } from '../../firebase';
 import { push, ref, set } from 'firebase/database';
 import { formatTime } from '../../libs/formatos';
 import MainCard from '../commons/MainCard';
+import { FooterSudoku } from './layout/FooterSudoku';
 
 function Juego() {
   let {
@@ -25,7 +26,7 @@ function Juego() {
     setInitArray,
     setWon,
   } = useSudokuContext();
-  let [difficulty, setDifficulty] = useState('Easy');
+  let [difficulty, setDifficulty] = useState('Facil');
   let [mistakesMode, setMistakesMode] = useState(false);
   let [history, setHistory] = useState([]);
   let [solvedArray, setSolvedArray] = useState([]);
@@ -40,7 +41,7 @@ function Juego() {
    */
   function createNewGame(e) {
     // se genera el arreglo inicial del juego y el arreglo de solución
-    let [temporaryInitArray, temporarySolvedArray] = getUniqueSudoku(difficulty,e,);
+    let [temporaryInitArray, temporarySolvedArray] = getUniqueSudoku(difficulty, e,);
     // se guarda la variable del juego inicial (por si en un futuro se quiera reiniciar el juego)
     setInitArray(temporaryInitArray);
     // se guarda la variable del juego (este es el que se cambian los valores con los numeros)
@@ -106,15 +107,18 @@ function Juego() {
    */
   function saveScore() {
     // valida si el tiempo es mayor a 0 para evitar registros indeseados
-    if( timeSec > 0 ) {
+    if (timeSec > 0) {
       const rankingRef = ref(db, "Ranking-sudoku");
       const newScoreRef = push(rankingRef);
       const timeNow = timeSec;
       setTime(timeNow);
       // se crea el objeto a registrar en BD
       const newScore = {
+        uid: user.uid,
+        email: user.email,
         username: user.displayName,
-        time: timeNow
+        time: timeNow,
+        level: difficulty
       };
       // se sube a la BD
       set(newScoreRef, newScore);
@@ -165,6 +169,11 @@ function Juego() {
     }
   }
 
+  function onChangeDifficulty(e) {
+    setDifficulty(e.target.value);
+    createNewGame(e);
+  }
+
   /**
    * Función para autocompletar la celda seleccionada.
    */
@@ -183,7 +192,7 @@ function Juego() {
     setTimeSec(0);
     setTime(0);
   }
- 
+
   /**
    * Función que se ejecuta al cargar el componente
    */
@@ -203,29 +212,36 @@ function Juego() {
     <div>
       <div> <br /> </div>
       <div className='titulos'>
-            <h1>Sudoku</h1>
-          </div>
-          <div> <br /> </div>
+        <h1>Sudoku</h1>
+      </div>
+      <div> <br /> </div>
       <MainCard>
-      <Header onClick={onClickNewGame} onClicSolvedGame={onClickHint} />
-      <Grid container spacing={2}>
-        <Grid xs={8}>
-          <div className={overlay ? 'container blur' : 'container'}>
-            <div className="innercontainer">
-              <GameSection onClick={indexOfArray => onClickCell(indexOfArray)} />
-              <StatusSection
-                onClickNumber={number => onClickNumber(number)}
-                onClickHint={onClickHint}
-                timeSec={time > 0 ? time: timeSec}
-              />
+        <Grid container spacing={2}>
+          <Grid xs={8}>
+        <Header
+          timeSec={time > 0 ? time : timeSec}
+          onChange={(e) => onChangeDifficulty(e)}
+        />
+            <div className={overlay ? 'container blur' : 'container'}>
+              <div className="innercontainer">
+                <GameSection onClick={indexOfArray => onClickCell(indexOfArray)} />
+                <StatusSection
+                  onClickNumber={number => onClickNumber(number)}
+
+                />
+              </div>
             </div>
-          </div>
+            <FooterSudoku
+          onClick={onClickNewGame}
+          onClicSolvedGame={onClickHint}
+        />
+          </Grid>
+          <Grid xs={4}>
+            <br />
+            <Clasificaciones rankingName="Ranking-sudoku" levelToFilter={difficulty} />
+          </Grid>
         </Grid>
-        <Grid xs={4}>
-          <Clasificaciones rankingName="Ranking-sudoku" />
-        </Grid>
-      </Grid>
-      <Dialog
+        <Dialog
           open={overlay}
           onClose={onClickOverlay}
           aria-labelledby="alert-dialog-title"

@@ -2,12 +2,14 @@
 import HomeIcon from '@mui/icons-material/Home';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import SsidChartIcon from '@mui/icons-material/SsidChart';
+import GroupsIcon from '@mui/icons-material/Groups';
 
 // icons
 const icons = {
     SsidChartIcon,
     HomeIcon,
-    PeopleAltIcon
+    PeopleAltIcon,
+    GroupsIcon
 };
 
 // ==============================|| MENU ITEMS - DASHBOARD ||============================== //
@@ -31,7 +33,7 @@ const dashboard = {
             type: 'item',
             url: '/Usuarios',
             icon: icons.PeopleAltIcon,
-            breadcrumbs: false
+            breadcrumbs: true
         },
         {
             id: 'estadisticas',
@@ -39,7 +41,15 @@ const dashboard = {
             type: 'item',
             url: '/Estadisticas',
             icon: icons.SsidChartIcon,
-            breadcrumbs: false
+            breadcrumbs: true
+        },
+        {
+            id: 'grupos',
+            title: 'Grupos',
+            type: 'item',
+            url: '/Grupos',
+            icon: icons.GroupsIcon,
+            breadcrumbs: true
         }
     ]
 };

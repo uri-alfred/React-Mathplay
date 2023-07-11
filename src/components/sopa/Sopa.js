@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import MenuPrincipal from '../commons/MenuPrincipal';
 import Grid from '@mui/material/Grid';
 
 const rows = 10;
@@ -111,7 +110,6 @@ function Sopa() {
 
   return (
     <div>
-      <MenuPrincipal />
       <br />
       <br />
       <Grid container spacing={2}>

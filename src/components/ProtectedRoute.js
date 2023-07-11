@@ -12,13 +12,3 @@ export function ProtectedRoute({ children }) {
 
   return <>{children}</>;
 }
-
-// export function ProtectedRouteAMN({ children }) {
-//   const { user, loading, userInfo } = useAuth();
-
-//   if (loading) return <Loading />;
-
-//   if (!user && userInfo != "MP-AMN") return <Navigate to="/login" />;
-
-//   return <>{children}</>;
-// }
